@@ -9,7 +9,7 @@ services:
     image: v7lin/simple_pub_server
     restart: always
     ports:
-      - 8080:8080
+      - 80:8080
     volumes:
       - ../dev-ops-repo/pub_server:/tmp/package-db
     environment:
