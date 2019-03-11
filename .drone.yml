@@ -2,6 +2,16 @@ kind: pipeline
 name: default
 
 steps:
+- name: prepare
+  image: google/dart:2.2.0
+#  volumes:
+#  - name: pub-cache
+#    path: /opt/flutter/.pub-cache
+  commands:
+  - pub get
+  - ls
+  - ls ~
+
 - name: analyze
   image: google/dart:2.2.0
   commands:
@@ -26,3 +36,7 @@ steps:
 #  when:
 #    event:
 #    - tag
+
+volumes:
+- name: pub-cache
+  temp: {}
