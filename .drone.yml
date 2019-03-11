@@ -15,14 +15,14 @@ steps:
 - name: publish
   image: plugins/docker
   settings:
-    repo: v7lin/pub_server
+    repo: v7lin/simple_pub_server
     username:
       from_secret: REGISTRY_USER
     password:
       from_secret: REGISTRY_PASSWORD
     tags:
-    - ${DRONE_TAG}
+#    - ${DRONE_TAG}
     - latest
-  when:
-    event:
-    - tag
+#  when:
+#    event:
+#    - tag
