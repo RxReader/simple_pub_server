@@ -1,0 +1,22 @@
+name: simple_pub_server
+version: 0.1.5
+author: v7lin <v7lin@qq.com>
+description: simple_pub_server
+homepage: https://github.com/v7lin/simple_pub_server
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  pub_server: ^0.1.5
+  archive: ^2.0.8
+  http: ^0.11.3+17
+  logging: ^0.11.3+2
+  dart2_constant: ^1.0.2+dart2
+  shelf: ^0.7.4
+  path: ^1.6.2
+  args: ^1.5.1
+  yaml: ^2.1.15
+
+dev_dependencies:
+  pedantic: ^1.2.0

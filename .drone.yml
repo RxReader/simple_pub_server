@@ -1,0 +1,28 @@
+kind: pipeline
+name: default
+
+steps:
+- name: analyze
+  image: google/dart:2.2.0
+  commands:
+  - dartanalyzer .
+
+- name: publish-check
+  image: google/dart:2.2.0
+  commands:
+  - pub publish --dry-run
+
+- name: publish
+  image: plugins/docker
+  settings:
+    repo: v7lin/pub_server
+    username:
+      from_secret: REGISTRY_USER
+    password:
+      from_secret: REGISTRY_PASSWORD
+    tags:
+    - ${DRONE_TAG}
+    - latest
+  when:
+    event:
+    - tag
