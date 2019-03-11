@@ -4,20 +4,25 @@ name: default
 steps:
 - name: prepare
   image: google/dart:2.2.0
-#  volumes:
-#  - name: pub-cache
-#    path: /opt/flutter/.pub-cache
+  volumes:
+  - name: pub-cache
+    path: /root/.pub-cache
   commands:
   - pub get
-  - find / -name '.pub-cache' -type d
 
 - name: analyze
   image: google/dart:2.2.0
+  volumes:
+  - name: pub-cache
+    path: /root/.pub-cache
   commands:
   - dartanalyzer .
 
 - name: publish-check
   image: google/dart:2.2.0
+  volumes:
+  - name: pub-cache
+    path: /root/.pub-cache
   commands:
   - pub publish --dry-run
 
