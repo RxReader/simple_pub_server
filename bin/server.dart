@@ -43,19 +43,24 @@ runPubServer(String baseDir, String host, int port, bool standalone) {
   var cow = new CopyAndWriteRepository(local, remote, standalone);
 
   var server = new ShelfPubServer(cow);
-  print('Listening on ${port == 443 ? 'https' : 'http'}://$host:$port\n'
-      '\n'
-      'To make the pub client use this repository configure your shell via:\n'
-      '\n'
-      '    \$ export PUB_HOSTED_URL=${port == 443 ? 'https' : 'http'}://$host:$port\n'
-      '\n');
 
-  return shelf_io.serve(
-      const Pipeline()
-          .addMiddleware(logRequests())
-          .addHandler(server.requestHandler),
-      host,
-      port);
+  return shelf_io
+      .serve(
+          const Pipeline()
+              .addMiddleware(logRequests())
+              .addHandler(server.requestHandler),
+          host,
+          port)
+      .then((HttpServer server) {
+    String hostedUrl =
+        '${server.port == 443 ? 'https' : 'http'}://${server.address.host}:${server.port}';
+    print('Listening on $hostedUrl\n'
+        '\n'
+        'To make the pub client use this repository configure your shell via:\n'
+        '\n'
+        '    \$ export PUB_HOSTED_URL=$hostedUrl\n'
+        '\n');
+  });
 }
 
 ArgParser argsParser() {
