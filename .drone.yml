@@ -10,7 +10,11 @@ steps:
   commands:
   - pub get
   - ls
-  - ls ~
+  - ls ~ -a
+  - cd /
+  - ls -a
+  - cd $DART_SDK
+  - ls -a
 
 - name: analyze
   image: google/dart:2.2.0
