@@ -48,7 +48,19 @@ runPubServer(String baseDir, String host, int port, bool standalone) {
       .serve(
           const Pipeline()
               .addMiddleware(logRequests())
-              .addHandler(server.requestHandler),
+              .addHandler((Request request) async {
+            if (request.method == 'GET') {
+              if (request.requestedUri.path == '/') {
+                String body = 'Dart version: ${Platform.version}\n' +
+                    'Dart executable: ${Platform.executable}\n' +
+                    'Dart executable arguments: ${Platform.executableArguments}';
+                return Response.ok(body, headers: <String, String> {
+                  HttpHeaders.contentTypeHeader: ContentType.text.toString(),
+                });
+              }
+            }
+            return await server.requestHandler(request);
+          }),
           host,
           port)
       .then((HttpServer server) {
