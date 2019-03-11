@@ -9,12 +9,7 @@ steps:
 #    path: /opt/flutter/.pub-cache
   commands:
   - pub get
-  - ls
-  - ls ~ -a
-  - cd /
-  - ls -a
-  - cd $DART_SDK
-  - ls -a
+  - find / -name '.pub-cache' -type d
 
 - name: analyze
   image: google/dart:2.2.0
