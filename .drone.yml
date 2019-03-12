@@ -35,11 +35,11 @@ steps:
     password:
       from_secret: REGISTRY_PASSWORD
     tags:
-#    - ${DRONE_TAG}
+    - ${DRONE_TAG}
     - latest
-#  when:
-#    event:
-#    - tag
+  when:
+    event:
+    - tag
 
 volumes:
 - name: pub-cache

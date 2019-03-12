@@ -15,3 +15,4 @@ services:
     environment:
       - TZ=${TIME_ZONE:-Asia/Shanghai}
       - PUB_SERVER_REPOSITORY_DATA=/tmp/package-db
+      - PUB_SERVER_STANDALONE=true
