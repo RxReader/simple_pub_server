@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -16,14 +17,14 @@ import 'package:simple_pub_server/http_proxy_repository.dart';
 
 final Uri pubDartLangOrg = Uri.parse('https://pub.dartlang.org');
 
-main(List<String> args) {
-  var parser = argsParser();
-  var results = parser.parse(args);
+void main(List<String> args) {
+  ArgParser parser = argsParser();
+  ArgResults results = parser.parse(args);
 
-  var directory = results['directory'] as String;
-  var host = results['host'] as String;
-  var port = int.parse(results['port'] as String);
-  var standalone = results['standalone'] as bool;
+  String directory = results['directory'] as String;
+  String host = '0.0.0.0'; // 不能用 localhost
+  int port = 8080;
+  bool standalone = results['standalone'] as bool;
 
   if (results.rest.isNotEmpty) {
     print('Got unexpected arguments: "${results.rest.join(' ')}".\n\nUsage:\n');
@@ -35,44 +36,35 @@ main(List<String> args) {
   runPubServer(directory, host, port, standalone);
 }
 
-runPubServer(String baseDir, String host, int port, bool standalone) {
-  var client = new http.Client();
+Future<HttpServer> runPubServer(
+    String baseDir, String host, int port, bool standalone) {
+  http.Client client = new http.Client();
 
-  var local = new FileRepository(baseDir);
-  var remote = new HttpProxyRepository(client, pubDartLangOrg);
-  var cow = new CopyAndWriteRepository(local, remote, standalone);
+  FileRepository local = new FileRepository(baseDir);
+  HttpProxyRepository remote = new HttpProxyRepository(client, pubDartLangOrg);
+  CopyAndWriteRepository cow =
+      new CopyAndWriteRepository(local, remote, standalone);
 
-  var server = new ShelfPubServer(cow);
+  ShelfPubServer pubServer = new ShelfPubServer(cow);
 
-  return shelf_io
-      .serve(
-          const Pipeline()
-              .addMiddleware(logRequests())
-              .addHandler((Request request) async {
-            if (request.method == 'GET') {
-              if (request.requestedUri.path == '/') {
-                String body = 'Dart version: ${Platform.version}\n' +
-                    'Dart executable: ${Platform.executable}\n' +
-                    'Dart executable arguments: ${Platform.executableArguments}';
-                return Response.ok(body, headers: <String, String> {
-                  HttpHeaders.contentTypeHeader: ContentType.text.toString(),
-                });
-              }
-            }
-            return await server.requestHandler(request);
-          }),
-          host,
-          port)
-      .then((HttpServer server) {
-    String hostedUrl =
-        '${server.port == 443 ? 'https' : 'http'}://${server.address.host}:${server.port}';
-    print('Listening on $hostedUrl\n'
-        '\n'
-        'To make the pub client use this repository configure your shell via:\n'
-        '\n'
-        '    \$ export PUB_HOSTED_URL=$hostedUrl\n'
-        '\n');
-  });
+  return shelf_io.serve(
+      const Pipeline()
+          .addMiddleware(logRequests())
+          .addHandler((Request request) async {
+        if (request.method == 'GET') {
+          if (request.requestedUri.path == '/') {
+            String body = 'Dart version: ${Platform.version}\n' +
+                'Dart executable: ${Platform.executable}\n' +
+                'Dart executable arguments: ${Platform.executableArguments}\n';
+            return Response.ok(body, headers: <String, String>{
+              HttpHeaders.contentTypeHeader: ContentType.text.toString(),
+            });
+          }
+        }
+        return await pubServer.requestHandler(request);
+      }),
+      host,
+      port);
 }
 
 ArgParser argsParser() {
@@ -81,14 +73,8 @@ ArgParser argsParser() {
   parser.addOption('directory',
       abbr: 'd',
       defaultsTo: Platform.environment['PUB_SERVER_REPOSITORY_DATA'] ??
-          'pub_server-repository-data');
+          '/tmp/package-db');
 
-  parser.addOption('host',
-      abbr: 'h',
-      defaultsTo: Platform.environment['PUB_SERVER_HOST'] ?? 'localhost');
-
-  parser.addOption('port',
-      abbr: 'p', defaultsTo: Platform.environment['PUB_SERVER_PORT'] ?? '8080');
   parser.addFlag('standalone',
       abbr: 's',
       defaultsTo: Platform.environment['PUB_SERVER_STANDALONE'] == 'true');

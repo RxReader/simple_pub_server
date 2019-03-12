@@ -4,14 +4,15 @@ version: "3.7"
 # 服务
 services:
 
-  pub_server:
-    container_name: pub_server
-    image: v7lin/simple_pub_server
+  simple_pub_server:
+    container_name: simple_pub_server
+    image: simple_pub_server
     restart: always
     ports:
       - 8080:8080
+      - 8181:8181
     volumes:
-      - ../dev-ops-repo/pub_server:/tmp/package-db
+      - ../dev-ops-repo/simple_pub_server:/tmp/package-db
     environment:
       - TZ=${TIME_ZONE:-Asia/Shanghai}
       - PUB_SERVER_REPOSITORY_DATA=/tmp/package-db
