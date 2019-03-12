@@ -6,7 +6,7 @@ services:
 
   simple_pub_server:
     container_name: simple_pub_server
-    image: simple_pub_server
+    image: v7lin/simple_pub_server
     restart: always
     ports:
       - 8080:8080
