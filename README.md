@@ -17,7 +17,7 @@ services:
 
   simple_pub_server:
     container_name: simple_pub_server
-    image: v7lin/simple_pub_server
+    image: v7lin/simple_pub_server:0.1.5
     restart: always
     ports:
       - 8080:8080
@@ -26,6 +26,7 @@ services:
     environment:
       - TZ=${TIME_ZONE:-Asia/Shanghai}
       - PUB_SERVER_REPOSITORY_DATA=/tmp/package-db
+      - PUB_SERVER_STANDALONE=true
 ````
 
 ### push dart packages or flutter packages/plugins to private pub_server
