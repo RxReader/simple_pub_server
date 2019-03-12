@@ -26,6 +26,8 @@ void main(List<String> args) {
   int port = 8080;
   bool standalone = results['standalone'] as bool;
 
+  print('standalone: $standalone');
+
   if (results.rest.isNotEmpty) {
     print('Got unexpected arguments: "${results.rest.join(' ')}".\n\nUsage:\n');
     print(parser.usage);
