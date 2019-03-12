@@ -45,7 +45,7 @@ Future<HttpServer> runPubServer(
   CopyAndWriteRepository cow =
       new CopyAndWriteRepository(local, remote, standalone);
 
-  ShelfPubServer pubServer = new ShelfPubServer(cow);
+  ShelfPubServer server = new ShelfPubServer(cow);
 
   return shelf_io.serve(
       const Pipeline()
@@ -61,14 +61,14 @@ Future<HttpServer> runPubServer(
             });
           }
         }
-        return await pubServer.requestHandler(request);
+        return await server.requestHandler(request);
       }),
       host,
       port);
 }
 
 ArgParser argsParser() {
-  var parser = new ArgParser();
+  ArgParser parser = new ArgParser();
 
   parser.addOption('directory',
       abbr: 'd',
@@ -83,8 +83,8 @@ ArgParser argsParser() {
 
 void setupLogger() {
   Logger.root.onRecord.listen((LogRecord record) {
-    var head = '${record.time} ${record.level} ${record.loggerName}';
-    var tail = record.stackTrace != null ? '\n${record.stackTrace}' : '';
+    String head = '${record.time} ${record.level} ${record.loggerName}';
+    String tail = record.stackTrace != null ? '\n${record.stackTrace}' : '';
     print('$head ${record.message} $tail');
   });
 }

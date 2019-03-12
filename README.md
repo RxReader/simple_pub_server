@@ -47,7 +47,7 @@ flutter packages pub publish --server http://${your pub_server domain}
 ````
 test:
   hosted:
-    name: ${your pub_server name}
+    name: test # name of your package/plugin
     url: http://${your pub_server domain}
   version: ^0.0.1
 ````
